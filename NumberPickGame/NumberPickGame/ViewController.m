@@ -11,6 +11,7 @@
     int currentValue;
     int screenWidth;
     int screenHeight;
+    int targetValue;
 }
 -(IBAction)showAlert:(UISlider*)sender;
 - (IBAction)sliderMoved:(id)sender;
@@ -18,10 +19,63 @@
 
 @implementation ViewController
 @synthesize slider = _slider;
-@synthesize minTextView = _minTextView;
+@synthesize minTextField = _minTextField;
+@synthesize targetValueTextField = _targetValueTextField;
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    [self initView];
+    [self startNewRound];
+}
+
+/**
+ 重新生成随机数
+ */
+-(void)getNewTargetNum{
+    targetValue = 1 + (arc4random()%100);
+}
+
+/**
+ 下一轮游戏
+ */
+-(void)startNewRound{
+    [self getNewTargetNum];
+    currentValue = 50;
+    _slider.value = currentValue;
+    [self textAlignCenterhorizontal:[NSString stringWithFormat:@"%d", targetValue] :_targetValueTextField];
+    //[_targetValueTextField setText:[NSString stringWithFormat:@"%d", targetValue]];
+}
+
+
+
+/**
+ text:需要居中的文本
+ textField：需要居中的textField
+ */
+-(void)textAlignCenterhorizontal:(NSString *)text: (UITextField*) textField{
+    // 让文字居中和设置字体大小
+    NSMutableParagraphStyle *paragraph = [[NSMutableParagraphStyle alloc] init];
+    //文字居中
+    paragraph.alignment = NSTextAlignmentCenter;
+    //字体大小
+    UIFont *font =[UIFont systemFontOfSize:15];
+    
+    NSMutableAttributedString *attr = [[NSMutableAttributedString alloc] initWithString:text];
+    //添加属性 居中
+    [attr addAttribute:NSParagraphStyleAttributeName
+                                     value:paragraph
+                                     range:NSMakeRange(0, [attr length])];
+    //添加属性 大小
+    [attr addAttribute:NSFontAttributeName
+                 value:font
+                 range:NSMakeRange(0, [attr length])];
+    //替换掉原来的属性
+    textField.attributedText = attr;
+    //删去背景颜色
+    textField.backgroundColor = NULL;
+}
+
+-(void)initView{
     screenWidth = self.view.frame.size.width;
     screenHeight = self.view.frame.size.height;
     //slider
@@ -35,37 +89,18 @@
     //slider左边的最小值
     UITextField *minValueText = [[UITextField alloc]initWithFrame:CGRectMake(self.view.frame.size.width/6, self.view.frame.size.height/2-15, 50, 30)];
     minValueText.text = @"1";
-    self.minTextView = minValueText;
+    self.minTextField = minValueText;
    
     
     //slider右边的最大值
     UITextField *maxValueText = [[UITextField alloc]initWithFrame:CGRectMake(self.view.frame.size.width/6*5-20, self.view.frame.size.height/2-15, 50, 30)];
     maxValueText.text = @"100";
-    self.maxTextView = maxValueText;
+    self.maxTextField = maxValueText;
     
     
     //游戏的提示 “拖动slider让结果最接近数字"
     UITextField *goalText = [[UITextField alloc]initWithFrame:CGRectMake(0, self.view.frame.size.height/5, self.view.frame.size.width, 30)];
-    // 让文字居中和设置字体大小
-    NSMutableParagraphStyle *paragraph = [[NSMutableParagraphStyle alloc] init];
-    //文字居中
-    paragraph.alignment = NSTextAlignmentCenter;
-    //字体大小
-    UIFont *font =[UIFont systemFontOfSize:15];
-    
-    NSMutableAttributedString *attr = [[NSMutableAttributedString alloc] initWithString:@"拖动slider让结果最接近数字"];
-    //添加属性 居中
-    [attr addAttribute:NSParagraphStyleAttributeName
-                                     value:paragraph
-                                     range:NSMakeRange(0, [attr length])];
-    //添加属性 大小
-    [attr addAttribute:NSFontAttributeName
-                 value:font
-                 range:NSMakeRange(0, [attr length])];
-    //替换掉原来的属性
-    goalText.attributedText = attr;
-    //删去背景颜色
-    goalText.backgroundColor = NULL;
+    [self textAlignCenterhorizontal:@"拖动slider让结果最接近数字" :goalText];
     
     
     //按钮 显示slider的当前值
@@ -102,6 +137,11 @@
     [countOfRoundsTextField setText:@"10"];
     
     
+    //目标值
+    UITextField *targetValueTextField = [[UITextField alloc]initWithFrame:CGRectMake(0, goalText.frame.origin.y+35, screenWidth, 30)];
+    self.targetValueTextField = targetValueTextField;
+    
+    
     
     
     [self.view addSubview:goalText];
@@ -114,6 +154,7 @@
     [self.view addSubview:scoreTextField];
     [self.view addSubview:countOfRoundsHintTextField];
     [self.view addSubview:countOfRoundsTextField];
+    [self.view addSubview:targetValueTextField];
 }
 
 /**
@@ -129,16 +170,18 @@
  */
 -(IBAction)showAlert:(id)sender{
     currentValue = _slider.value;
-    NSString *message = [NSString stringWithFormat:@"滑动条的当前数值是: %d",currentValue];
+    NSString *message = [NSString stringWithFormat:@"滑动条的当前数值是: %d,我们的目标数值是：%d",currentValue,targetValue];
     // 1.创建UIAlertController
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Alert Title"
                                                             message:message
                                                             preferredStyle:UIAlertControllerStyleAlert];
     // 2.创建并添加按钮
-        UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"下一轮" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             NSLog(@"OK Action");
+            [self startNewRound];
+            
         }];
-        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"继续" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
             NSLog(@"Cancel Action");
         }];
 

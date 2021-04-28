@@ -9,7 +9,8 @@
 
 @interface ViewController : UIViewController
 @property (strong, nonatomic) UISlider *slider;
-@property (strong, nonatomic) UITextField *minTextView;
-@property (strong, nonatomic) UITextField *maxTextView;
+@property (strong, nonatomic) UITextField *minTextField;
+@property (strong, nonatomic) UITextField *maxTextField;
+@property (strong, nonatomic) UITextField *targetValueTextField;
 @end
 
