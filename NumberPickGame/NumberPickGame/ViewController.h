@@ -6,7 +6,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
+@class ViewController;
 @interface ViewController : UIViewController
 @property (strong, nonatomic) UISlider *slider;
 @property (strong, nonatomic) UITextField *minTextField;
@@ -17,5 +17,10 @@
 @property (strong, nonatomic) UITextField *numOfRoundsTextField;
 //本轮回合的尝试次数
 @property (strong, nonatomic) UITextField *numOfTryTextField;
+@property ( nonatomic) int currentValue;
+@property ( nonatomic) int targetValue;
+@property ( nonatomic) int countOfTry;
+@property ( nonatomic) int score;
+@property ( nonatomic) int rounds;
 @end
 
