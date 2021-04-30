@@ -5,26 +5,25 @@
 //  Created by reburn on 2021/4/28.
 //
 
-#import "ViewController.h"
-
-@interface ViewController (){
+#import "GameViewController.h"
+#import "UITools.h"
+@interface GameViewController (){
     int screenWidth;
     int screenHeight;
 }
 -(void)showAlert:(UISlider*)sender;
 @end
 
-@implementation ViewController
+@implementation GameViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    [self initData];
     [self initView];
     [self startNewRound];
     //监听屏幕旋转
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didChangeRotate:) name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
-    _slider.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
-    _scoreLabel.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
 }
 
 - (void)didChangeRotate:(NSNotification*)notice {
@@ -37,6 +36,12 @@
         NSLog(@"横屏");
         }
    }
+
+
+-(void)initData{
+    screenWidth = self.view.frame.size.width;
+    screenHeight = self.view.frame.size.height;
+}
 
 /**
  重新生成随机数
@@ -78,42 +83,7 @@
     [_scoreLabel setText:[NSString stringWithFormat:@"%d", _score]];
 }
 
-
-
--(CGSize)getCGSizeFromText:(NSString *)text : (nullable NSDictionary<NSAttributedStringKey, id> *)attrs API_AVAILABLE(macos(10.0), ios(7.0)){
-    CGSize size = [text sizeWithAttributes:attrs];
-    return size;
-}
-
--(CGSize)getCGSizeFromText:(UILabel *)label{
-    CGSize size = [label.text sizeWithAttributes:@{NSFontAttributeName:label.font}];
-    return size;
-}
-
 -(void)initView{
-    screenWidth = self.view.frame.size.width;
-    screenHeight = self.view.frame.size.height;
-    //slider
-    UISlider *slider2  = [[UISlider alloc]initWithFrame:CGRectMake(screenWidth/4,screenHeight/2-15,screenWidth/2,30)];
-    slider2.minimumValue = 1;
-    slider2.maximumValue = 100;
-    slider2.value = 50;
-    self.slider = slider2;
-    slider2.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
-    
-    
-    //slider左边的最小值
-    UILabel *minValueText = [[UILabel alloc]initWithFrame:CGRectMake(screenWidth/6, screenHeight/2-15, 50, 30)];
-    minValueText.text = @"1";
-    self.minValueLabel = minValueText;
-    minValueText.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
-    
-    //slider右边的最大值
-    UILabel *maxValueText = [[UILabel alloc]initWithFrame:CGRectMake(screenWidth/6*5-20, screenHeight/2-15, 50, 30)];
-    maxValueText.text = @"100";
-    maxValueText.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
-    self.maxValueLabel = maxValueText;
-    
     
     //游戏的提示 “拖动slider让结果最接近数字"
     //这里一开始就不要设置frame了 先计算出frame
@@ -122,67 +92,88 @@
     [goalText setText:@"拖动slider让结果最接近数字"];
     goalText.textAlignment = NSTextAlignmentCenter;//默认是左对齐 这里改成居中
     //算宽度和高度
-    CGSize size = [self getCGSizeFromText:goalText];
+    CGSize size = [UITools getCGSizeFromText:goalText];
     goalText.frame = CGRectMake(0, screenHeight/5, screenWidth, size.height);
     goalText.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
     
+
+    //slider
+    UISlider *slider2  = [[UISlider alloc]initWithFrame:CGRectMake(screenWidth/4,screenHeight/2-15,screenWidth/2,size.height)];
+    slider2.minimumValue = 1;
+    slider2.maximumValue = 100;
+    slider2.value = 50;
+    self.slider = slider2;
+    slider2.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
+     
+    
+    //slider左边的最小值
+    UILabel *minValueText = [[UILabel alloc]initWithFrame:CGRectMake(screenWidth/6, screenHeight/2-15, 50, size.height)];
+    minValueText.text = @"1";
+    self.minValueLabel = minValueText;
+    minValueText.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
+    
+    //slider右边的最大值
+    UILabel *maxValueText = [[UILabel alloc]initWithFrame:CGRectMake(screenWidth/6*5-20, screenHeight/2-15, 50, size.height)];
+    maxValueText.text = @"100";
+    maxValueText.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
+    self.maxValueLabel = maxValueText;
+    
+    
+    
+    
     //按钮 显示slider的当前值
-    UIButton *showSliderValueButton = [[UIButton alloc]initWithFrame:CGRectMake(screenWidth/6*5, screenHeight/6*5, 100, 30)];
+    UIButton *showSliderValueButton = [[UIButton alloc]initWithFrame:CGRectMake(screenWidth/6*5, screenHeight/6*5, 100, size.height)];
     [showSliderValueButton setTitle:@"提交" forState:UIControlStateNormal];
     //设置点击事件
     [showSliderValueButton addTarget:self action:@selector(showAlert:) forControlEvents:UIControlEventTouchDown];
     showSliderValueButton.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
     
     //再来一次按钮
-    UIButton *tryAgainBtn = [[UIButton alloc]initWithFrame:CGRectMake(screenWidth/18, screenHeight/6*5, 150, 30)];
+    UIButton *tryAgainBtn = [[UIButton alloc]initWithFrame:CGRectMake(screenWidth/18, screenHeight/6*5, 150, size.height)];
     [tryAgainBtn setTitle:@"重置分数和回合数" forState:UIControlStateNormal];
     //设置点击事件
     [tryAgainBtn addTarget:self action:@selector(resetRounds:) forControlEvents:UIControlEventTouchDown];
     tryAgainBtn.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
     
     //分数 提示“分数：”
-    UILabel *scoreHintTextField = [[UILabel alloc]initWithFrame:CGRectMake(screenWidth/15*4, screenHeight/6*5, 50, 30)];
-    [scoreHintTextField setText:@"分数:"];
-    scoreHintTextField.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
+    UILabel *scoreHintLabel = [[UILabel alloc]initWithFrame:CGRectMake(tryAgainBtn.frame.origin.x+tryAgainBtn.frame.size.width+20, screenHeight/6*5, 50, size.height)];
+    [scoreHintLabel setText:@"分数:"];
+    scoreHintLabel.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
     
     //分数 真正的得分
-    UILabel *scoreTextField = [[UILabel alloc]initWithFrame:CGRectMake(screenWidth/15*5, screenHeight/6*5, 50, 30)];
-    [scoreTextField setText:@"0"];
-    self.scoreLabel = scoreTextField;
-    scoreHintTextField.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
+    UILabel *scoreLabel = [[UILabel alloc]initWithFrame:CGRectMake(scoreHintLabel.frame.origin.x+scoreHintLabel.frame.size.width+5, screenHeight/6*5, 50, size.height)];
+    [scoreLabel setText:@"0"];
+    self.scoreLabel = scoreLabel;
+    scoreLabel.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
     
     //回合数提示
-    UILabel *countOfRoundsHintTextField = [[UILabel alloc]initWithFrame:CGRectMake(screenWidth/15*8, screenHeight/6*5, 70, 30)];
-    countOfRoundsHintTextField.text = @"回合数：";
-    countOfRoundsHintTextField.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
-    
-    //UILabel *countOfRoundsHintTextField = [UILabel new];
-    //countOfRoundsHintTextField.textAlignment = NSTextAlignmentCenter;//默认是左对齐 这里改成居中
-    //算宽度和高度
-    //CGSize size2 = [self getCGSizeFromText:countOfRoundsHintTextField];
-    //countOfRoundsHintTextField.frame = CGRectMake(0, screenHeight/5, size2.width, size2.height);
-    
+    UILabel *countOfRoundsHintLabel = [[UILabel alloc]init];
+    countOfRoundsHintLabel.text = @"回合数：";
+    CGSize size2 = [UITools getCGSizeFromText:countOfRoundsHintLabel];
+    countOfRoundsHintLabel.frame = CGRectMake(screenWidth/15*8, screenHeight/6*5, size2.width, size2.height);
+    countOfRoundsHintLabel.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
+
     
     //回合数
-    UILabel *countOfRoundsTextField = [[UILabel alloc]initWithFrame:CGRectMake(countOfRoundsHintTextField.frame.origin.x+countOfRoundsHintTextField.frame.size.width+5, screenHeight/6*5, 100, 30)];
-    [countOfRoundsTextField setText:@"0"];
-    countOfRoundsTextField.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
-    self.numOfRoundsTextField = countOfRoundsTextField;
+    UILabel *countOfRoundsLabel = [[UILabel alloc]init];
+    [countOfRoundsLabel setText:@"0"];
+    size2 = [UITools getCGSizeFromText:countOfRoundsLabel];
+    countOfRoundsLabel.frame = CGRectMake(countOfRoundsHintLabel.frame.origin.x+countOfRoundsHintLabel.frame.size.width+5, screenHeight/6*5, size2.width, size2.height);
+    countOfRoundsLabel.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
+    self.numOfRoundsLabel = countOfRoundsLabel;
     
     
     //尝试次数展示
-    UILabel *countOfTryTextField = [[UILabel alloc]initWithFrame:CGRectMake(screenWidth/15*10, screenHeight/6*5, 170, 30)];
-    [countOfTryTextField setText:@"尝试：0次"];
-    countOfTryTextField.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
-    self.numOfTryTextField = countOfTryTextField;
+    UILabel *countOfTryLabel = [[UILabel alloc]initWithFrame:CGRectMake(countOfRoundsLabel.frame.origin.x+countOfRoundsLabel.frame.size.width+20, screenHeight/6*5, 170, size2.height)];
+    [countOfTryLabel setText:@"尝试：0次"];
+    countOfTryLabel.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
+    self.numOfTryLabel = countOfTryLabel;
     
     //目标值
-    UILabel *targetValueTextField = [[UILabel alloc]initWithFrame:CGRectMake(0, goalText.frame.origin.y+35, screenWidth, 30)];
-    targetValueTextField.textAlignment = NSTextAlignmentCenter;
-    targetValueTextField.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
-    self.targetValueLabel = targetValueTextField;
-    
-    
+    UILabel *targetValueLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, goalText.frame.origin.y+35, screenWidth, size2.height)];
+    targetValueLabel.textAlignment = NSTextAlignmentCenter;
+    targetValueLabel.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
+    self.targetValueLabel = targetValueLabel;
     
     [self.view addSubview:goalText];
     [self.view addSubview:maxValueText];
@@ -190,19 +181,19 @@
     [self.view addSubview:slider2];
     [self.view addSubview:showSliderValueButton];
     [self.view addSubview:tryAgainBtn];
-    [self.view addSubview:scoreHintTextField];
-    [self.view addSubview:scoreTextField];
-    [self.view addSubview:countOfRoundsHintTextField];
-    [self.view addSubview:countOfRoundsTextField];
-    [self.view addSubview:targetValueTextField];
-    [self.view addSubview:countOfTryTextField];
+    [self.view addSubview:scoreHintLabel];
+    [self.view addSubview:scoreLabel];
+    [self.view addSubview:countOfRoundsHintLabel];
+    [self.view addSubview:countOfRoundsLabel];
+    [self.view addSubview:targetValueLabel];
+    [self.view addSubview:countOfTryLabel];
 }
 
 /**
  计算回合数量
  */
 -(void)countRounds{
-    [_numOfRoundsTextField setText:[NSString stringWithFormat:@"%d",_rounds]];
+    [_numOfRoundsLabel setText:[NSString stringWithFormat:@"%d",_rounds]];
 }
 
 /**
@@ -217,7 +208,7 @@
 }
 
 -(void)showCountOfTry{
-    [_numOfTryTextField setText:[NSString stringWithFormat:@"尝试：%d次",_countOfTry]];
+    [_numOfTryLabel setText:[NSString stringWithFormat:@"尝试：%d次",_countOfTry]];
 }
 
 

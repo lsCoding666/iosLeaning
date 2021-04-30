@@ -6,17 +6,17 @@
 //
 
 #import <UIKit/UIKit.h>
-@class ViewController;
-@interface ViewController : UIViewController
+@class GameViewController;
+@interface GameViewController : UIViewController
 @property (strong, nonatomic) UISlider *slider;
 @property (strong, nonatomic) UILabel *minValueLabel;
 @property (strong, nonatomic) UILabel *maxValueLabel;
 @property (strong, nonatomic) UILabel *targetValueLabel;
 @property (strong, nonatomic) UILabel *scoreLabel;
 //回合数
-@property (strong, nonatomic) UILabel *numOfRoundsTextField;
+@property (strong, nonatomic) UILabel *numOfRoundsLabel;
 //本轮回合的尝试次数
-@property (strong, nonatomic) UILabel *numOfTryTextField;
+@property (strong, nonatomic) UILabel *numOfTryLabel;
 @property ( nonatomic) int currentValue;
 @property ( nonatomic) int targetValue;
 @property ( nonatomic) int countOfTry;
