@@ -9,14 +9,14 @@
 @class ViewController;
 @interface ViewController : UIViewController
 @property (strong, nonatomic) UISlider *slider;
-@property (strong, nonatomic) UITextField *minTextField;
-@property (strong, nonatomic) UITextField *maxTextField;
-@property (strong, nonatomic) UITextField *targetValueTextField;
-@property (strong, nonatomic) UITextField *scoreTextField;
+@property (strong, nonatomic) UILabel *minValueLabel;
+@property (strong, nonatomic) UILabel *maxValueLabel;
+@property (strong, nonatomic) UILabel *targetValueLabel;
+@property (strong, nonatomic) UILabel *scoreLabel;
 //回合数
-@property (strong, nonatomic) UITextField *numOfRoundsTextField;
+@property (strong, nonatomic) UILabel *numOfRoundsTextField;
 //本轮回合的尝试次数
-@property (strong, nonatomic) UITextField *numOfTryTextField;
+@property (strong, nonatomic) UILabel *numOfTryTextField;
 @property ( nonatomic) int currentValue;
 @property ( nonatomic) int targetValue;
 @property ( nonatomic) int countOfTry;
